@@ -75,8 +75,7 @@
       ;; tvrain.ru
       [:.after-player :.recent-news :a] putinize-node
       [:.custom-widget :.title] putinize-node
-      [:.custom-widget :.item :a] putinize-node
-      )
+      [:.custom-widget :.item :a] putinize-node)
      (fix-urls url)))
 
 (defroutes app-routes
