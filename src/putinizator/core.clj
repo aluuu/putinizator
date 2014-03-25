@@ -35,9 +35,12 @@
           (recur (first content)))))))
 
 (defn replace-url [node attr base-url url]
-  (if (urly/relative? (-> node :attrs attr))
-    (assoc node :attrs (assoc (:attrs node) attr (urly/resolve base-url url)))
-    node))
+  (try
+    (if (urly/relative? (-> node :attrs attr))
+      (assoc node :attrs (assoc (:attrs node) attr (urly/resolve base-url url)))
+      node)
+    (catch Exception e node)))
+   
 
 (defn fix-url [base-url node]
   (condp (fn [x y] (contains? (:attrs y) x)) node
@@ -66,6 +69,7 @@
         abs-url (str (urly/protocol-of url) "://" (urly/host-of url))])
   (-> (html/at
       (fetch-url url)
+      [:h1 :a] putinize-node
       ;; lenta.ru
       [:h2 :a] putinize-node
       [:h3 :a] putinize-node
@@ -75,7 +79,10 @@
       ;; tvrain.ru
       [:.after-player :.recent-news :a] putinize-node
       [:.custom-widget :.title] putinize-node
-      [:.custom-widget :.item :a] putinize-node)
+      [:.custom-widget :.item :a] putinize-node
+      ;; lj navalny
+      [:.entry-title :a] putinize-node
+      [:.summary-list :ul :li :a] putinize-node)
      (fix-urls url)))
 
 (defroutes app-routes
